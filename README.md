@@ -2,7 +2,7 @@
 
 Create a GitHub account, if you don't already have one. Need help? Here are some resources to help you set up your GitHub account:
 
-- https://ayushirawat.com/what-is-git-and-github-or-git-vs-github
+- https://www.youtube.com/watch?v=tTvLl138ky4
 
 
 ### Step - 2:
