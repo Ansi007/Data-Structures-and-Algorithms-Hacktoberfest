@@ -34,16 +34,20 @@ Add your changes
 
 ### Step - 8:
 
-Push your changes
+Commit your changes
 
 ### Step - 9:
 
-Create Pull Request
+Push your changes
 
 ### Step - 10:
 
-Wait and Move on to the next Repository!
+Create Pull Request
 
 ### Step - 11:
+
+Wait and Move on to the next Repository!
+
+### Step - 12:
 
 Enjoy Hacking!
