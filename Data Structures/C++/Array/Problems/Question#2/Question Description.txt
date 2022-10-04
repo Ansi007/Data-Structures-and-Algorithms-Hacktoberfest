@@ -1,1 +1,1 @@
-Given an integer array return true if the given array is monotonic false otherwise?
+Given an integer array return true if the given array is monotonic false otherwise
