@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "inheritEnvironments": [
+        "mingw_64"
+      ],
+      "name": "Mingw64",
+      "includePath": [
+        "C:\\MinGW\\bin"
+      ],
+      "intelliSenseMode": "linux-gcc-x64"
+    }
+  ]
+}
