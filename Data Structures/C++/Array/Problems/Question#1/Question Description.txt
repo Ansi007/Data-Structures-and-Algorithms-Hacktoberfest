@@ -1,0 +1,3 @@
+//Question:You are given an; array of integer in which each subsequent value is not less than the previous value
+//Write a Function that takes this array as an input and returns a new array with a square of each numbers sorted
+//in ascending order
