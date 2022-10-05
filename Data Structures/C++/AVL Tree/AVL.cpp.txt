@@ -1,0 +1,570 @@
+#pragma once
+#include <iostream>
+#include <stack>
+#include <queue>
+
+#define SPACE 10
+
+using namespace std;
+
+template<typename T>
+class AVL_Node {
+public:
+	AVL_Node* left;
+	int data;
+	AVL_Node* right;
+	int height;
+
+	AVL_Node(int x = -1, int h = 1, AVL_Node* l = NULL, AVL_Node* r = NULL) {
+
+		this->data = x;
+		this->left = l;
+		this->right = r;
+		height = h;
+	}
+};
+
+template<typename T>
+class AVL_Tree {
+public:
+
+	//Root
+	AVL_Node<int>* root = nullptr;
+	//----------------------------------------------------------//
+	AVL_Tree();
+	~AVL_Tree();
+	int balanceFactor(AVL_Node<T>* p);
+	AVL_Tree(const AVL_Tree<T>& obj);
+	int height();
+	AVL_Node<T>* search(T key);
+	void Insert(T value);
+	bool isBST(const AVL_Tree<int>* tree);
+	void inOrderCopy(const AVL_Node<T>* p);
+	void deleteNode(AVL_Node<T>* key);
+	void levelorder();
+	void print2dWrapper(int space);
+	int nodeHeight(AVL_Node<int>* head);
+	AVL_Node<T>* LR_Rotation(AVL_Node<T>* p);
+	AVL_Node<T>* LL_Rotation(AVL_Node<T>* p);
+	AVL_Node<T>* RL_Rotation(AVL_Node<T>* p);
+	AVL_Node<T>* RR_Rotation(AVL_Node<T>* p);
+	void inOrder();
+	void AfterOperationBalancer(stack<AVL_Node<T>*>& st, AVL_Node<T>* temp);
+	bool isBalanced(AVL_Node<T>* p);
+	AVL_Node<T>* balanceIt(AVL_Node<T>* p);
+};
+
+//Constructor
+template<typename T>
+AVL_Tree<T>::AVL_Tree() {
+
+}
+
+// deallocatoin function
+template<typename T>
+void deallocate(AVL_Node<T>* temp) {
+
+	if (temp) {
+		deallocate(temp->left);
+		deallocate(temp->right);
+		delete temp;
+	}
+}
+
+//destructor
+template<typename T>
+AVL_Tree<T>::~AVL_Tree() {
+
+	deallocate(root);
+}
+
+//Copy Constructor Helper
+template<typename T>
+void AVL_Tree<T>::inOrderCopy(const AVL_Node<T>* p) {
+
+	if (!p) {
+		return;
+	}
+
+	inOrderCopy(p->left);
+	this->Insert(p->data);
+	inOrderCopy(p->right);
+}
+
+//Copy Constructor
+template<typename T>
+AVL_Tree<T>::AVL_Tree(const AVL_Tree<T>& obj) {
+
+	inOrderCopy(obj.root);
+}
+
+// calculate height
+template<typename T>
+int AVL_Tree<T>::nodeHeight(AVL_Node<int>* head) {
+
+	if (!head) {
+
+		return 0;
+	}
+	else
+	{
+		cout << head->data << endl;
+		int lh = nodeHeight(head->left);
+		int rh = nodeHeight(head->right);
+
+		if (lh > rh)
+			return lh + 1;
+		else
+			return rh + 1;
+	}
+}
+
+//height wrapper function
+template<typename T>
+int AVL_Tree<T>::height()
+{
+	return nodeHeight(root);
+}
+
+template<typename T>
+bool AVL_Tree<T>::isBalanced(AVL_Node<T>* p) {
+
+	int diff = nodeHeight(p->left) - nodeHeight(p->right);
+
+	if (diff < -1 || diff > 1) {
+
+		return false;
+	}
+	else return true;
+}
+
+template<typename T>
+AVL_Node<T>* AVL_Tree<T>::LL_Rotation(AVL_Node<T>* p) {
+
+	AVL_Node<T>* pl = p->left;
+	AVL_Node<T>* plr = pl->right;
+
+	pl->right = p;
+	p->left = plr;
+
+	p->height = nodeHeight(p);
+	pl->height = nodeHeight(pl);
+
+	if (root == p) {
+		root = pl;
+	}
+
+	return pl;
+}
+
+template<typename T>
+AVL_Node<T>* AVL_Tree<T>::RR_Rotation(AVL_Node<T>* p) {
+
+	AVL_Node<T>* pr = p->right;
+	AVL_Node<T>* prl = pr->left;
+
+	pr->left = p;
+	p->right = prl;
+
+	p->height = nodeHeight(p);
+	pr->height = nodeHeight(pr);
+
+	if (root == p) {
+		root = pr;
+	}
+
+	return pr;
+}
+
+template<typename T>
+AVL_Node<T>* AVL_Tree<T>::RL_Rotation(AVL_Node<T>* p) {
+
+	AVL_Node<T>* pr = p->right;
+	AVL_Node<T>* prl = pr->left;
+
+	pr->left = prl->right;
+	p->right = prl->left;
+
+
+	prl->right = pr;
+	prl->left = p;
+
+	// Height
+	p->height = nodeHeight(p);
+	pr->height = nodeHeight(pr);
+	prl->height = nodeHeight(prl);
+
+	if (root == p) {
+		root = prl;
+	}
+
+	return prl;
+}
+
+template<typename T>
+AVL_Node<T>* AVL_Tree<T>::LR_Rotation(AVL_Node<T>* p) {
+	AVL_Node<T>* pl = p->left;
+	AVL_Node<T>* plr = pl->right;
+
+	pl->right = plr->left;
+	p->left = plr->right;
+
+	plr->left = pl;
+	plr->right = p;
+
+	// Height
+	pl->height = nodeHeight(pl);
+	p->height = nodeHeight(p);
+	plr->height = nodeHeight(plr);
+
+	if (p == root) {
+		root = plr;
+	}
+
+	return plr;
+}
+
+template<typename T>
+int AVL_Tree<T>::balanceFactor(AVL_Node<T>* p) {
+
+	int left = p->left ? p->left->height : 0;
+	int right = p->right ? p->right->height : 0;
+
+	int diff = left - right;
+
+	return diff;
+}
+
+template<typename T>
+AVL_Node<T>* AVL_Tree<T>::balanceIt(AVL_Node<T>* p) {
+
+	if (balanceFactor(p) == 2 && balanceFactor(p->left) == 1) {
+
+		return LL_Rotation(p);
+	}
+	else if (balanceFactor(p) == 2 && balanceFactor(p->left) == -1) {
+
+		return LR_Rotation(p);
+	}
+	else if (balanceFactor(p) == 2 && balanceFactor(p->left) == 0) {
+
+		return LL_Rotation(p);
+	}
+	else if (balanceFactor(p) == -2 && balanceFactor(p->right) == -1) {
+
+		return RR_Rotation(p);
+	}
+	else if (balanceFactor(p) == -2 && balanceFactor(p->right) == 1) {
+
+		return RL_Rotation(p);
+	}
+	else if (balanceFactor(p) == -2 && balanceFactor(p->right) == 0) {
+
+		return RR_Rotation(p);
+	}
+
+	return p;
+}
+
+template<typename T>
+void AVL_Tree<T>::AfterOperationBalancer(stack<AVL_Node<T>*>& st, AVL_Node<T>* temp) {
+
+	while (!st.empty()) {
+
+		AVL_Node<T>* p = st.top();
+		st.pop();
+
+		//height update
+		p->height = nodeHeight(p);
+
+		if (!isBalanced(p)) {
+
+			if (!st.empty()) {
+				temp = st.top();
+				if (temp->data < p->data)
+					temp->right = balanceIt(p);
+				else
+					temp->left = balanceIt(p);
+			}
+			else {
+				balanceIt(p);
+			}
+		}
+	}
+}
+
+template<typename T>
+void AVL_Tree<T>::Insert(T value) {
+
+	if (!root) {
+		root = new AVL_Node<T>(value);
+		return;
+	}
+
+	stack<AVL_Node<T>*> st;
+
+	AVL_Node<T>* p, * temp = nullptr;
+	p = root;
+	temp = p;
+
+	while (p) {
+
+		if (value == p->data) {
+			return;
+		}
+		if (value < p->data) {
+			st.push(p);
+			temp = p;
+			p = p->left;
+		}
+		else {
+			st.push(p);
+			temp = p;
+			p = p->right;
+		}
+	}
+
+	if (value < temp->data)
+		temp->left = new AVL_Node<T>(value);
+	else
+		temp->right = new AVL_Node<T>(value);
+
+	AfterOperationBalancer(st, temp);
+}
+
+template<typename T>
+void inOrderRecursive(AVL_Node<T>* Tree) {
+
+	if (Tree) {
+		inOrderRecursive(Tree->left);
+		cout << Tree->data << " ";
+		inOrderRecursive(Tree->right);
+	}
+}
+
+template<typename T>
+void AVL_Tree<T>::inOrder() {
+
+	inOrderRecursive(root);
+	cout << endl;
+}
+
+template<typename T>
+void AVL_Tree<T>::levelorder() {
+
+	bool r = false;
+	bool l = false;
+	queue<AVL_Node<T>*> que;
+
+	AVL_Node<T>* p = root;
+
+	cout << p->data << endl;
+	que.push(p);
+
+	while (!que.empty()) {
+
+		p = que.front();
+		que.pop();
+
+		if (p->left) {
+			cout << p->left->data << " --> ";
+			que.push(p->left);
+			l = true;
+		}
+		if (!l) cout << "    ";
+
+		if (p->right) {
+			cout << p->right->data << " --> ";
+			que.push(p->right);
+			r = true;
+		}
+		if (!r) cout << "    ";
+
+		cout << endl;
+
+		l = r = false;
+	}
+
+	cout << endl;
+}
+
+//print
+template<typename T>
+void print2D(AVL_Node<T>* r, int space) {
+
+	if (r == NULL) { return; }
+
+	space += SPACE;
+
+	print2D(r->right, space);
+	cout << endl;
+
+	for (int i = SPACE; i < space; i++)
+		cout << " ";
+
+	cout << r->data << " (" << r->height << ")" << "\n";
+
+	print2D(r->left, space);
+}
+
+template<typename T>
+void AVL_Tree<T>::print2dWrapper(int space) {
+
+	print2D(root, space);
+}
+
+template<typename T>
+AVL_Node<T>* AVL_Tree<T>::search(T key) {
+
+	AVL_Node<T>* p = root;
+
+
+	while (p)
+	{
+		if (key == p->data) {
+
+			return p;
+		}
+		else if (key < p->data)
+		{
+			p = p->left;
+		}
+		else
+		{
+			p = p->right;
+		}
+	}
+
+	return nullptr;
+}
+
+template<typename T>
+void AVL_Tree<T>::deleteNode(AVL_Node<T>* key)
+{
+	bool flag = false;
+	bool isRoot = true;
+	AVL_Node<T>* p = root;
+	AVL_Node<T>* temp = nullptr;
+	AVL_Node<T>* temp_2 = nullptr;
+	stack<AVL_Node<T>*> st;
+
+	while (p)
+	{
+		if (key->data == p->data && key->height == p->height) {
+
+			flag = true;
+			st.push(p);
+			break;
+		}
+		else if (key->data < p->data)
+		{
+			st.push(p);
+			temp = p;
+			p = p->left;
+			isRoot = false;
+		}
+		else
+		{
+			st.push(p);
+			temp = p;
+			p = p->right;
+			isRoot = false;
+		}
+	}
+
+	if (!flag) {
+		return;
+	}
+
+	// Holding the desired(to be deleted) Node, while (p) searches for its replacement.
+	temp_2 = p;
+
+	if (p->left == nullptr && p->right == nullptr)
+	{
+		if (temp->left == p)
+			temp->left = nullptr;
+		else
+			temp->right = nullptr;
+
+		delete p;
+
+		AfterOperationBalancer(st, temp);
+	}
+	else if (p->left != nullptr && p->right != nullptr)
+	{
+		flag = false;
+		temp = p;
+		p = p->left;
+
+		while (p->right)
+		{
+			flag = true;
+			temp = p;
+			p = p->right;
+		}
+
+		swap(p->data, temp_2->data);
+
+		//deleteNode(key);
+
+		if (flag)
+			temp->right = nullptr;
+		else
+			temp->left = nullptr;
+
+		delete p;
+
+		AfterOperationBalancer(st, temp);
+	}
+	else if (p->left == nullptr || p->right == nullptr)
+	{
+		if (p->left)
+			temp_2 = p->left;
+		else
+			temp_2 = p->right;
+
+		if (isRoot) {
+
+			root = temp_2;
+			delete p;
+		}
+		else if (temp->left == p)
+		{
+			delete p;
+			temp->left = temp_2;
+		}
+		else
+		{
+			delete p;
+			temp->right = temp_2;
+		}
+
+		if (!isRoot)
+			AfterOperationBalancer(st, temp);
+	}
+}
+
+// Inorder Print functionality to help check if the tree is BST or not
+bool isBST(const AVL_Tree<int>* tree) {
+
+	stack<AVL_Node<int>*> st;
+
+	AVL_Node<int>* temp = tree->root;
+	int prev = 0;
+
+	while (temp != nullptr || !st.empty()) {
+
+		if (temp) {
+			st.push(temp);
+			temp = temp->left;
+		}
+		else {
+			temp = st.top();
+			st.pop();
+			if (prev >= temp->data) { return false; }
+			prev = temp->data;
+			temp = temp->right;
+		}
+	}
+	return true;
+}
