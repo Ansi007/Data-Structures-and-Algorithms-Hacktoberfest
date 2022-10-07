@@ -1,0 +1,241 @@
+ #include<iostream>
+using namespace std;
+class Node
+{
+	int data;
+	Node* next;//legal 
+	
+
+public:
+	
+
+	Node(int data, Node* next)
+	{
+		this->data = data;
+		this->next = next;
+
+	}
+
+
+	friend class List;
+
+};
+class List
+{
+	Node* head;
+
+public:
+
+
+
+
+
+	List()//default constructor
+	{
+		head = NULL;
+
+	}
+	//Checking the list is empty or not
+	bool isEmpty()
+	{
+		return !head;//if the list is empty then the head contains (0)
+	}
+
+	//Instert at end
+	void insertAtend(int data)
+	{
+		Node* NewNode = new Node(data, NULL);//null bcz adding at the end
+
+		if (head == NULL)//if the node that is to be added is the first node then this condition will be true
+		{
+			head = NewNode;
+		}
+
+		else
+		{
+			Node* curNode = head;//we will traverse with this pointer rather than head pointer
+			while (curNode->next != NULL)
+			{
+				curNode = curNode->next;
+			}
+
+			curNode->next = NewNode;
+		}
+	}
+
+	
+
+	//Traverse the list
+	void traverse()
+	{
+		if (head == NULL)
+		{
+			cout << "The List is empty ";
+		}
+		else
+		{
+			Node* curNode = head;
+			do
+			{
+				cout << curNode->data << "\t";
+				curNode = curNode->next;
+			} while (curNode != NULL);
+
+		}
+	}
+	//Insert at Start
+	void insertAtStart(int data)
+	{
+
+		Node* newNode = new Node(data, NULL);
+
+		if (head == NULL)
+		{
+			head = newNode;
+		}
+		else
+		{
+			Node* curNode = head;
+
+			newNode->next = curNode;
+
+			head = newNode;
+
+
+
+		}
+
+	}
+	//Delete from last
+	void removeLast()
+	{
+		if (head == NULL)
+		{
+			cout << "The is list is empty ";
+
+		}
+		else
+		{
+			if (head->next == NULL)
+			{
+				delete head;
+				head = NULL;
+
+			}
+
+			else
+			{
+				Node* preNode = head;
+				Node* curNode = head->next;
+				while (curNode->next != NULL)
+				{
+					preNode = curNode;
+					curNode = curNode->next;
+				}
+				delete curNode;
+				preNode->next = NULL;
+			}
+		}
+	}
+	//Delete a node at nth position
+	void Delete(int n)
+	{
+		Node* curNode = head;
+		Node* preNode = curNode->next;
+		if (n == 1)
+		{
+			head = curNode->next;
+			delete curNode;
+		}
+		else
+		{
+			for (int i = 0; i < n - 2; i++)
+
+			{
+				curNode = curNode->next;
+			}
+			preNode = curNode->next;
+			curNode->next = preNode->next;
+			delete preNode;
+		}
+	}
+
+	//Display the list
+	void Display()
+	{
+		Node* temp = head;
+		while (temp != NULL)
+		{
+			cout << temp->data<<" ";
+			temp = temp->next;
+
+		}
+	}
+
+	//Reverse a link list Iterative method
+	void Reverse()
+	{
+		Node* curNode, * preNode, * temp;
+		curNode = head;
+		preNode = NULL;
+		while (curNode != NULL)
+		{
+			temp = curNode->next;
+			curNode->next = preNode;
+			preNode = curNode;
+			curNode = temp;
+		}
+		head = preNode;
+	 }
+	
+	Node* temp = head;
+	//Print a linked list using recursion
+	void Print()
+	{
+
+		while (temp != NULL)
+		{
+			cout << temp->data;
+			temp = temp->next;
+			Print();
+
+		}
+			
+
+		
+		
+	        
+			
+
+		
+	}
+	//Print a reversed linked list using recursion
+	void PrintR()
+	{
+
+	}
+};
+int main()
+{
+	List l1;
+
+	l1.insertAtend(2);
+	l1.insertAtend(22);
+	l1.insertAtStart(4);
+	l1.insertAtend(27);
+
+	
+	l1.Print();
+	l1.Display();
+
+	//l1.Reverse();
+	//int n=0;
+	//cout << "\nEnter the position of the number you want to delete " << endl;
+	//cin >> n;
+	//l1.Delete(n);
+	//cout << " List after deleting the node at positon  " <<n<< endl;
+	//l1.Display();
+
+}
+
+
