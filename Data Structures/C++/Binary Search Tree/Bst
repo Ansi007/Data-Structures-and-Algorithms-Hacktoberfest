@@ -1,0 +1,539 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+class Node
+{
+private:
+	int data;
+	Node* left;
+	Node* right;
+
+public:
+	Node()
+	{
+		data = 0;
+		left = NULL;
+		right = NULL;
+	}
+	Node(int data, Node* left, Node* right)
+	{
+		this->data = data;
+		this->left = left;
+		this->right = right;
+
+	}
+
+	friend class  BST;
+};
+
+class BST
+{
+private:
+	Node* root;
+
+
+	//recursive removal
+	Node*Removal(Node* root, int data)//calling the horse function
+	{
+		
+			if (root == NULL)
+			{
+				return root;
+			}
+			else if (data < root->data)
+			{
+				root->left = Removal(root->left, data);
+			}
+			else if (data > root->data)
+			{
+				root->right = Removal(root->right, data);
+			}
+
+			// Wohoo... I found you, Get ready to be deleted	
+			else {
+				// Case 1:  No child
+				if (root->left == NULL && root->right == NULL) {
+					delete root;
+					root = NULL;
+				}
+				//Case 2: One child 
+				else if (root->left == NULL) {
+					 Node* temp = root;
+					root = root->right;
+					delete temp;
+				}
+				else if (root->right == NULL) {
+					 Node* temp = root;
+					root = root->left;
+					delete temp;
+				}
+				// case 3: 2 children
+				else {
+					 Node* temp = FindMin(root->right);
+					root->data = temp->data;
+					root->right = Removal(root->right, temp->data);
+				}
+			}
+			
+			return root;
+
+	}
+
+	//calling the horse function for Inorder traversal
+
+	void InOrder(Node* root)
+	{
+		if (root != NULL)
+		{
+			InOrder(root->left);
+			cout << root->data << "\t";
+			InOrder(root->right);
+		}
+	}
+
+	//calling the horse function of pre order traversal
+
+	void preOrder(Node* root)
+	{
+		if (root != NULL)
+		{
+			cout << root->data << "\t";
+			preOrder(root->left);
+			preOrder(root->right);
+		}
+	}
+
+
+	//calling the horse function of post order traversal
+
+	void postOrder(Node* root)
+	{
+		if (root != NULL)
+		{
+			postOrder(root->left);
+			postOrder(root->right);
+			cout << root->data << "\t";
+		}
+	}
+
+	//Findmax calling the horse function
+
+	int FindMax(Node* root)
+	{
+		while (root->right != NULL)
+		{
+			root = root->right;
+		}
+
+		return root->data;
+	}
+
+	void copy_tree(Node*& dest, const Node* src)
+	{
+		if (src == NULL)
+		{
+			dest = NULL;
+		}
+
+		else
+		{
+			dest = new Node();
+			dest->data = src->data;
+
+			copy_tree(dest->left, src->left);
+			copy_tree(dest->right, src->right);
+		}
+	}
+
+	//height of the tree calling the horse function
+	int height(Node* root)
+	{
+		if (root == NULL)
+		{
+			return -1;
+		}
+		else
+		{
+			int lheight = height(root->left);
+			int rheight = height(root->right);
+
+			if (lheight > rheight)
+			{
+				return lheight + 1;
+			}
+			else
+			{
+				return rheight + 1;
+			}
+		}
+	}
+
+
+
+
+public:
+	BST()
+	{
+		root = NULL;
+	}
+
+	void Insert( int data)
+	{
+
+		Node* newNode = new Node(data, NULL, NULL);
+
+		Node* curNode = root;//curNOde points to root
+		Node* preNode = NULL;//There is no predecessor of root 
+
+		while (curNode != NULL)
+		{
+			preNode = curNode;
+
+			if (data < curNode->data)
+			{
+				curNode = curNode->left;
+			}
+			else
+			{
+				curNode = curNode->right;
+			}
+		}
+
+		if (preNode == NULL)//first  node
+		{
+			root = newNode;
+		}
+		else if(data<preNode->data)//new node is less than from it's predecessor
+	
+		{
+			preNode->left = newNode;
+		}
+		else//new node is greater than from it's predecessor
+		{
+			preNode->right = newNode;
+		}
+
+	}
+
+	//searching
+
+
+	bool Search(int data)
+	{
+
+
+
+		Node* curNode = root;//curNOde points to root
+		Node* preNode = curNode;//There is no predecessor of root 
+
+		if (root == NULL)
+		{
+			return false;
+		}
+		else
+		{
+			while (curNode != NULL)
+			{
+				if (preNode->data == data)
+				{
+					break;
+				}
+				preNode = curNode;
+
+				if (data < curNode->data)
+				{
+					curNode = curNode->left;
+				}
+				else
+				{
+					curNode = curNode->right;
+				}
+			}
+
+		
+			 if (data == preNode->data)//new node is less than from it's predecessor
+			{
+				 return true;
+			}
+			else//new node is greater than from it's predecessor
+			{
+				 return false;
+			}
+		}
+
+
+	}
+
+	//Assignment operator overloading
+
+	void operator=(const BST &src)
+	{
+	
+		copy_tree(root, src.root);
+	}
+
+	//Deep copy constructor
+	BST(const BST & src)
+	{
+	
+
+		operator=(src);
+	 }
+
+	//FindMAX 
+
+	void FindMax()
+	{
+		
+		cout << "max is :" << FindMax(root) << endl;
+	}
+	
+	//Inorder public function 
+	void InOrder()
+	{
+		InOrder(root);
+	}
+
+	//preOrder public function
+
+	void preOrder()
+	{
+		preOrder(root);
+	}
+
+	//postorder public function
+
+	void postOrder()
+	{
+		postOrder(root);
+	}
+
+	Node* FindMin(Node* root)
+	{
+		while (root->left != NULL)
+		{
+			root = root->left;
+		}
+		return root;
+	}
+
+     
+
+	//iterative Node Removal
+	
+	//void Removal(int data)
+	//{
+	//	Node* curNode = root;//curNOde points to root
+	//	Node* preNode = curNode;//There is no predecessor of root 
+	//	Node* temp = curNode;
+
+	//	if (root == NULL)
+	//	{
+	//		return;
+	//	}
+	//	else
+	//	{
+	//		while (curNode != NULL)
+	//		{
+	//			if (preNode->data == data)
+	//			{
+	//				break;
+	//			}
+	//			temp = preNode;
+	//			preNode = curNode;
+
+
+	//			if (data < curNode->data)
+	//			{
+	//				curNode = curNode->left;
+	//			}
+	//			else
+	//			{
+	//				curNode = curNode->right;
+	//			}
+	//		}
+
+
+	//		if (data == preNode->data)
+	//		{
+	//			if (preNode->left == NULL && preNode->right == NULL)
+	//			{
+	//				if (temp->right == preNode)
+	//				{
+	//					temp->right = NULL;
+	//					delete preNode;
+	//				}
+	//				else
+	//				{
+	//					temp->left = NULL;
+	//					delete preNode;
+	//				}
+
+	//			}
+
+
+	//			else if (preNode->left == NULL || preNode->right == NULL)
+	//			{
+	//				if (temp->right == preNode)
+	//				{
+	//					if (preNode->right != NULL)
+	//					{
+	//						temp->right = preNode->right;
+	//						delete preNode;
+	//					}
+	//					else
+	//					{
+	//						temp->right = preNode->left;
+	//						delete preNode;
+	//					}
+	//				}
+	//				else
+	//				{
+	//					if (temp->left == preNode)
+	//					{
+	//						if (preNode->right != NULL)
+	//						{
+	//							temp->left = preNode->right;
+	//							delete preNode;
+	//						}
+	//						else
+	//						{
+	//							temp->left = preNode->left;
+	//							delete preNode;
+	//						}
+	//					}
+
+	//				}
+
+	//			}
+
+	//			else
+	//			{
+	//				Node* temp2 = preNode->right;
+	//				while (temp2!=NULL)
+	//				{
+	//					if (temp2->left == NULL)
+	//					{
+	//						preNode->data = temp2->data;
+	//						break;
+	//					}
+	//					temp2 = temp2->left;
+	//				}
+	//				
+
+	//				if (temp2->left == NULL && temp2->right == NULL)
+	//				{
+	//					delete temp2;
+
+	//				}
+	//				else
+	//				{
+
+	//				
+	//						
+	//							preNode->right->left = temp2->right;
+	//							delete 	temp2;
+	//				
+	//				}
+	//			}
+
+	//		}
+	//	}
+
+	//}
+     
+       
+
+    void Removal(int data)
+    {
+		Removal(root,data);
+    }
+
+	void height()
+	{
+		cout << "The height of this tree is : " << height(root) << endl;
+	}
+
+
+	//destruction
+	void Destroy(Node* temp)
+	{
+		if (temp == NULL)
+		{
+			return;
+		}
+		Destroy(temp->left);
+		Destroy(temp->right);
+
+		delete temp;
+	}
+	~BST()
+	{
+		
+		Destroy(root);
+		
+		
+	}
+
+
+};
+
+int main()
+{
+	BST t1;
+
+	t1.Insert(4);
+	t1.Insert(2);
+	t1.Insert(11);
+	t1.Insert(7);
+	t1.Insert(6);
+	t1.Insert(5);
+	t1.Insert(9);
+	t1.Insert(8);
+	/*t1.Insert(9);
+	t1.Insert(7);*/
+
+	//
+	//if (t1.Search(9) == true)
+	//{
+	//	cout << "data found" << endl;
+	//}
+	//else
+	//{
+	//	cout << "data not found" << endl;
+	//}
+
+	//t1.InOrder();
+	////t1.preOrder();
+	////t1.postOrder();
+
+	//t1.Removal(9);
+
+	//cout << endl;
+
+	//if (t1.Search(9) == true)
+	//{
+	//	cout << "data found" << endl;
+	//}
+	//else
+	//{
+	//	cout << "data not found" << endl;
+	//}
+    
+	BST t2(t1);
+
+	t2.InOrder();
+	t2.FindMax();
+	t2.height();
+
+
+
+
+
+
+
+	
+
+
+}
