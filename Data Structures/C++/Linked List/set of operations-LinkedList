@@ -1,0 +1,159 @@
+#include "node.cpp"
+#include <iostream>
+
+using namespace std;
+
+class LinkedList{
+    Node *Head;
+	Node *Tail;
+	
+public:
+	LinkedList () {
+		Head = Tail = 0;
+	}
+
+
+    void print() {
+		Node *temp = Head;
+		while (temp) {
+			cout << "Data = " << temp->data << endl;
+			temp = temp->next;	
+		}
+	}
+
+	int addtotail(int e) {
+		if (Tail != 0) {
+			Tail = new Node(e , 0, Tail) ;
+			Tail->prev->next = Tail;	
+		}
+		else Head = Tail = new Node (e) ;
+	}
+	
+    LinkedList unionoftwo(LinkedList &l) {
+        Node *temp = Head;
+        Node *t = l.Head;
+        LinkedList res;
+        while (temp != 0 and t!=0) {
+            if (temp->data < t->data) {
+                res.addtotail(temp->data) ;
+                temp = temp->next;
+            }
+            else if (temp->data > t->data) {
+                res.addtotail(t->data) ;
+                t = t->next;
+            }
+            else {
+                res.addtotail(t->data) ;
+                t = t->next;
+                temp = temp->next ;
+            }
+        }
+        while (temp) {
+            res.addtotail(temp->data) ;
+            temp = temp->next;
+        }
+        while (t) {
+            res.addtotail(t->data) ;
+            t = t->next;
+        }
+        return res;
+
+    }
+
+    LinkedList differenciation(LinkedList &l) {
+        Node *temp = Head;
+        Node *t = l.Head;
+        LinkedList res;
+        while (temp != 0 and t!=0) {
+            if (temp->data == t->data) {
+                t = t->next;
+                temp = temp->next;
+            }
+            else if (temp->data > t->data) {
+                
+                t = t->next;
+            }
+            else if (temp->data < t->data){
+                res.addtotail(temp->data) ;
+                temp = temp->next ;
+            }
+        }
+        while (temp) {
+            res.addtotail(temp->data) ;
+            temp = temp->next;
+        }
+        return res;
+
+    }
+
+    LinkedList intersection(LinkedList &l) {
+        Node *temp = Head;
+        Node *t = l.Head;
+        LinkedList res;
+        while (temp != 0 and t!=0) {
+            if (temp->data == t->data) {
+                res.addtotail(temp->data) ;
+                temp = temp->next;
+                 t = t->next;
+            }
+            else if (temp->data > t->data)       
+                t = t->next;
+            
+            else if (temp->data < t->data)  
+                temp = temp->next;
+        }
+        return res;
+    }
+
+    friend istream& operator >> (istream &in, LinkedList &l) {
+        int n , i , data;
+        Node *temp;
+        bool insert;
+        bool issmall;
+        cout << "Input number of nodes:" ;
+	    in >> n ; 
+        for (i = 1 ; i <= n ; i++) {
+            temp = l.Head;
+            insert = true;
+            issmall = true;
+            cout << "Input data for node " << i << ": " ;
+            cin >> data ;
+            if (i > 1) {
+                while(temp!=0) {
+                    if (temp->data == data) insert = false;
+                    if (temp->data > data) issmall = false;
+                    temp = temp-> next;
+                }
+            }
+            
+            if (insert && issmall) l.addtotail(data) ;
+            else if (insert) {
+                cout << "Elements in set are in an accesding order.Please enter greater number.\n";
+                i--;  
+            }
+            else {
+                cout << data << " already exists in set.\n";
+                i--;
+            }
+    }
+    }
+};
+
+int main() {
+	int n , i , data;
+	LinkedList l;
+	cin >> l;
+    l.print();
+    LinkedList l1 , l2 , l3;
+    cin >> l1;
+    l1.print();
+    l2 = l.unionoftwo(l1);
+    cout << "Union is:\n" ;
+    l2.print() ;
+    l3 = l.intersection(l1) ;
+    cout << "Intersection is:\n" ;
+    l3.print();
+    l3 = l.differenciation(l1);
+    cout << "Diffrenciation is:\n " ;
+    l3.print() ;
+}
