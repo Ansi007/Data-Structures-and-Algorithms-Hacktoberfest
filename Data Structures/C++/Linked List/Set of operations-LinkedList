@@ -1,18 +1,8 @@
+#include "node.cpp"
 #include <iostream>
-using namespace std;
-class Node {
-public:
-	int data ;
-	Node *next;
-	Node *prev;
 
-	Node () {	}
-	Node(int data , Node *N = 0 , Node *P = 0) {
-		this-> data = data;
-		next = N;
-        prev = P;
-	}
-};
+using namespace std;
+
 class LinkedList{
     Node *Head;
 	Node *Tail;
