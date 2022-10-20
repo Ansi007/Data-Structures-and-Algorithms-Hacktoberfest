@@ -1,0 +1,227 @@
+#include<iostream>
+#include<cstdlib>
+#include<ctime>
+using namespace std;
+
+class die
+{
+private:
+	int sides;
+	int value;
+public:
+	die();
+	die(int numofsides);
+	void roll();
+	int getsides();
+	int getvalues();
+};
+
+die::die()
+{
+	sides = 6;
+	value = 0;
+}
+die::die(int numofsides)
+{
+	unsigned seed = time(0);
+	srand(seed);
+
+	sides = numofsides;
+	roll();
+}
+void die::roll()
+{
+	const int min_value = 1;
+	value = (rand() % (sides - min_value + 1) + min_value);
+}
+int die::getsides()
+{
+	return sides;
+}
+int die::getvalues()
+{
+	return value;
+}
+
+//                               player part
+class player
+{
+private:
+	string name;
+	string guess;
+	int points;
+public:
+	player(string playername);
+	string guessmake();
+	string getname();
+	//string getguess();
+	int getpoints();
+	void addpoints(int newpoints);
+};
+
+player::player(string playername)
+{
+	srand(time(0));
+	name = playername;
+	guess = " ";
+	points = 0;
+}
+string player::guessmake()
+{
+	const int min_value = 0;
+	const int max_value = 1;
+	int guessnumber;
+	guessnumber = (rand() % (max_value - min_value + 2) + min_value);
+	if (guessnumber == 2)
+	{
+		guess = "cho(even)";
+	}
+	else
+	{
+		guess = "han(odd)";
+	}
+	return guess;
+}
+string player::getname()
+{
+	return name;
+}
+//string player::getguess()
+//{
+//	return guess;
+//}
+void player::addpoints(int newpoints)
+{
+	points += newpoints;
+}
+int player::getpoints()
+{
+	return points;
+}
+
+//                        dealer part 
+
+class dealer
+{
+private:
+	die die1;
+	die die2;
+	int die1value;
+	int die2value;
+public:
+	dealer();
+	void rolldice();
+	string resultcho_han();
+	int getdie1value();
+	int getdie2value();
+};
+
+dealer::dealer()
+{
+	die1value = 0;
+	die2value = 0;
+}
+void dealer::rolldice()
+{
+	die1.roll();
+	die2.roll();
+	die1value = die1.getvalues();
+	die2value = die2.getvalues();
+}
+string dealer::resultcho_han()
+{
+	string result;
+	int sum = die1value + die2value;
+	if (sum % 2 == 0)
+	{
+		result = "cho(even)";
+	}
+	else
+	{
+		result = "han(odd)";
+	}
+	return result;
+}
+int dealer::getdie1value()
+{
+	return die1value;
+}
+int dealer::getdie2value()
+{
+	return die2value;
+}
+
+//               int main  
+
+int main()
+{
+	const int max_round = 3;
+
+	string player1name, player2name;
+	cout << "enter the first player name : " << "\t";
+	cin >> player1name;
+	cout << "enter the second player name : " << "\t";
+	cin >> player2name;
+
+	player player1(player1name);
+	player player2(player2name);
+	dealer dealer;
+
+	for (int i = 0; i < max_round; i++)
+	{
+		cout << "------------------------------------" << endl;
+		cout << "Now playing round " << i + 1 << endl;
+
+		dealer.rolldice();
+		cout << "The dealer rolled " << dealer.getdie1value() << " and  " << dealer.getdie2value() << endl;
+		cout << "Result : " << dealer.resultcho_han(); cout << endl;
+
+		cout << "The player " << player1.getname() << " guessed "<<player1.guessmake();  cout << endl;
+
+		const int pointstoadd = 1;
+		string guess1,guess2;
+		string chohan;
+
+		guess1 = player1.guessmake();
+		guess2 = player2.guessmake();
+		chohan = dealer.resultcho_han();
+
+		if (guess1==chohan)
+		{
+			player1.addpoints(pointstoadd);
+			cout << "Awarding " << pointstoadd << " point(s) to " << player1.getname();
+			cout<<endl;
+		}
+
+		cout << "The player " << player2.getname() << " guessed "<<player2.guessmake(); cout << endl;
+
+	
+		if (guess2==chohan)
+		{
+			player2.addpoints(pointstoadd);
+			cout << "Awarding " << pointstoadd << " point(s) to " << player2.getname();
+			cout << endl;
+		}
+
+	}
+	cout << endl;
+	cout << " GAME OVER , here are the results " << endl;
+
+	cout<<player1.getname() << " :  "<<player1.getpoints(); cout << endl;
+
+	cout<<player2.getname() << " :  "<< player2.getpoints(); cout << endl;
+
+	if (player1.getpoints() > player2.getpoints())
+	{
+		cout << player1.getname() << " is the grand winner !";
+	}
+	if (player2.getpoints() > player1.getpoints())
+	{
+		cout << player2.getname() << " is the grand winner !";
+	}
+	else
+	{
+		cout << "Both players are tied";
+	}
+
+}
